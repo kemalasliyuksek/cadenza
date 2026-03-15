@@ -26,10 +26,9 @@
         <small>Must match exactly what you set in the <a href="https://developer.spotify.com/dashboard" target="_blank">Spotify Developer Dashboard</a>.</small>
 
         {% if spotify_connected %}
-        <p><mark>Connected</mark></p>
-        <form method="POST" action="{{ url_for('settings.spotify_disconnect') }}" style="display:inline">
-            <button type="submit" class="outline secondary">Disconnect Spotify</button>
-        </form>
+        <p><mark>Connected</mark> — <a href="{{ url_for('settings.spotify_disconnect') }}"
+           onclick="fetch('{{ url_for('settings.spotify_disconnect') }}', {method:'POST'}).then(()=>location.reload()); return false;"
+           class="secondary">Disconnect</a></p>
         {% elif settings.spotify_client_id and settings.spotify_client_secret %}
         <a href="{{ url_for('settings.spotify_auth') }}" role="button" class="outline">
             Connect Spotify
