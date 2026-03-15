@@ -44,14 +44,12 @@ class DownloaderService:
             _find_ytdlp(),
             "-x",
             "--audio-format", audio_format,
-            "--audio-quality", "0" if audio_quality == "best" else audio_quality.rstrip("k"),
+            "--audio-quality", "0",
             "--output", output_template,
             "--no-playlist",
             "--no-overwrites",
             "--retries", "3",
-            "--no-warnings",
             "--quiet",
-            "--format", "bestaudio/best",
             url,
         ]
 
