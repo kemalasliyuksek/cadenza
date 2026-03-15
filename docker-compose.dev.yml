@@ -1,0 +1,16 @@
+services:
+  cadenza:
+    build: .
+    container_name: cadenza-dev
+    ports:
+      - "8811:8811"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - CADENZA_SECRET_KEY=dev-secret-not-for-production
+      - CADENZA_MUSIC_PATH=/music
+      - CADENZA_LOG_LEVEL=debug
+    volumes:
+      - ./cadenza:/app/cadenza
+      - ./data:/app/data
+      - ./music:/music

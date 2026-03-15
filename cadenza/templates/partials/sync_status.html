@@ -1,0 +1,16 @@
+{% if sync.running %}
+<article aria-busy="true" class="sync-progress">
+    <header>Syncing: {{ sync.playlist_name or 'All playlists' }}</header>
+    <p>
+        {{ sync.current_track or 'Starting...' }}
+        <br>
+        <small>{{ sync.progress }} / {{ sync.total }} tracks</small>
+    </p>
+    <progress value="{{ sync.progress }}" max="{{ sync.total }}"></progress>
+    <footer>
+        <button hx-post="{{ url_for('api.sync_stop') }}" hx-swap="none" class="outline secondary small">
+            Cancel
+        </button>
+    </footer>
+</article>
+{% endif %}

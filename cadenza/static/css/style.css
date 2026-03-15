@@ -1,0 +1,111 @@
+/* Cadenza — Custom styles on top of Pico CSS */
+
+/* Flash messages */
+.flash {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: var(--pico-border-radius);
+}
+.flash-success {
+    background-color: var(--pico-ins-color);
+    color: var(--pico-color);
+}
+.flash-error {
+    background-color: var(--pico-del-color);
+    color: var(--pico-color);
+}
+
+/* Status badges */
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+.badge-success { background: #2d6a4f; color: #d8f3dc; }
+.badge-warning { background: #7f5539; color: #fde68a; }
+.badge-error { background: #9b2226; color: #fecdd3; }
+.badge-info { background: #1d4e89; color: #bfdbfe; }
+.badge-secondary { background: #4a4e69; color: #c9ada7; }
+
+/* Playlist header */
+.playlist-header {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+.playlist-cover {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: var(--pico-border-radius);
+    flex-shrink: 0;
+}
+
+/* Playlist cards */
+.playlist-card {
+    padding: 0;
+    overflow: hidden;
+}
+.playlist-card a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    padding: 1rem;
+}
+.playlist-card a:hover {
+    opacity: 0.85;
+}
+.playlist-card-cover {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--pico-border-radius);
+    margin-bottom: 0.75rem;
+}
+
+/* Button group */
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+.button-group form {
+    margin: 0;
+}
+
+/* Small button */
+.small {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.6rem;
+}
+
+/* Sync progress */
+.sync-progress {
+    border-left: 4px solid var(--pico-primary);
+}
+
+/* Table improvements */
+table {
+    font-size: 0.9rem;
+}
+td, th {
+    white-space: nowrap;
+}
+td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+    white-space: normal;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 2rem 0;
+    opacity: 0.6;
+}

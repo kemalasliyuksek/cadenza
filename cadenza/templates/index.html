@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Cadenza{% endblock %}
+
+{% block content %}
+<hgroup>
+    <h1>Dashboard</h1>
+    <p>Your music library at a glance</p>
+</hgroup>
+
+<div class="grid">
+    <article>
+        <header>Playlists</header>
+        <h2>{{ playlists|length }}</h2>
+        <footer><a href="{{ url_for('playlists.list_playlists') }}">View all</a></footer>
+    </article>
+    <article>
+        <header>Downloaded</header>
+        <h2>{{ downloaded_tracks }}</h2>
+        <footer>of {{ total_tracks }} total tracks</footer>
+    </article>
+    <article>
+        <header>Pending</header>
+        <h2>{{ pending_tracks }}</h2>
+        <footer>
+            {% if pending_tracks > 0 %}
+            <button hx-post="{{ url_for('api.sync_all') }}" hx-swap="none" class="outline">
+                Sync All Now
+            </button>
+            {% else %}
+            All caught up
+            {% endif %}
+        </footer>
+    </article>
+</div>
+
+<div id="sync-status"
+     hx-get="{{ url_for('api.sync_status') }}"
+     hx-trigger="load, every 3s"
+     hx-swap="innerHTML">
+</div>
+
+{% if playlists %}
+<h2>Playlists</h2>
+<div class="grid">
+    {% for playlist in playlists[:6] %}
+    {% include "partials/playlist_card.html" %}
+    {% endfor %}
+</div>
+{% else %}
+<article>
+    <header>Get Started</header>
+    <p>Add your first Spotify playlist to start syncing.</p>
+    <a href="{{ url_for('playlists.add') }}" role="button">Add Playlist</a>
+</article>
+{% endif %}
+
+{% if recent_logs %}
+<h2>Recent Syncs</h2>
+<div hx-get="{{ url_for('api.logs') }}" hx-trigger="load" hx-swap="innerHTML">
+    Loading...
+</div>
+{% endif %}
+{% endblock %}

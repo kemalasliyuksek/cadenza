@@ -1,0 +1,18 @@
+services:
+  cadenza:
+    build: .
+    container_name: cadenza
+    user: "33:33"
+    restart: unless-stopped
+    ports:
+      - "8811:8811"
+    environment:
+      - CADENZA_SECRET_KEY=${CADENZA_SECRET_KEY:-change-me-to-a-random-string}
+      - CADENZA_MUSIC_PATH=/music
+      - CADENZA_LOG_LEVEL=info
+    volumes:
+      - cadenza_data:/app/data
+      - ${MUSIC_PATH:-./music}:/music
+
+volumes:
+  cadenza_data:

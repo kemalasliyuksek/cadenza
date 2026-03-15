@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Settings — Cadenza{% endblock %}
+
+{% block content %}
+<hgroup>
+    <h1>Settings</h1>
+    <p>Configure Cadenza</p>
+</hgroup>
+
+<form method="POST" action="{{ url_for('settings.save') }}">
+    <fieldset>
+        <legend>Spotify</legend>
+
+        <label for="spotify_client_id">Client ID</label>
+        <input type="text" id="spotify_client_id" name="spotify_client_id"
+               value="{{ settings.spotify_client_id }}" placeholder="Your Spotify Client ID">
+
+        <label for="spotify_client_secret">Client Secret</label>
+        <input type="password" id="spotify_client_secret" name="spotify_client_secret"
+               value="{{ settings.spotify_client_secret }}" placeholder="Your Spotify Client Secret">
+
+        <label for="spotify_redirect_uri">Redirect URI</label>
+        <input type="text" id="spotify_redirect_uri" name="spotify_redirect_uri"
+               value="{{ settings.spotify_redirect_uri }}"
+               placeholder="http://127.0.0.1:8811/settings/spotify/callback">
+        <small>Must match exactly what you set in the <a href="https://developer.spotify.com/dashboard" target="_blank">Spotify Developer Dashboard</a>.</small>
+
+        {% if spotify_connected %}
+        <p><mark>Connected</mark></p>
+        <form method="POST" action="{{ url_for('settings.spotify_disconnect') }}" style="display:inline">
+            <button type="submit" class="outline secondary">Disconnect Spotify</button>
+        </form>
+        {% elif settings.spotify_client_id and settings.spotify_client_secret %}
+        <a href="{{ url_for('settings.spotify_auth') }}" role="button" class="outline">
+            Connect Spotify
+        </a>
+        {% else %}
+        <small>Enter your Client ID and Secret, save, then connect.</small>
+        {% endif %}
+    </fieldset>
+
+    <fieldset>
+        <legend>Audio</legend>
+
+        <label for="audio_format">Format</label>
+        <select id="audio_format" name="audio_format">
+            <option value="mp3" {{ 'selected' if settings.audio_format == 'mp3' }}>MP3</option>
+            <option value="opus" {{ 'selected' if settings.audio_format == 'opus' }}>Opus</option>
+            <option value="m4a" {{ 'selected' if settings.audio_format == 'm4a' }}>M4A</option>
+        </select>
+
+        <label for="audio_quality">Quality</label>
+        <select id="audio_quality" name="audio_quality">
+            <option value="320k" {{ 'selected' if settings.audio_quality == '320k' }}>320 kbps</option>
+            <option value="256k" {{ 'selected' if settings.audio_quality == '256k' }}>256 kbps</option>
+            <option value="192k" {{ 'selected' if settings.audio_quality == '192k' }}>192 kbps</option>
+            <option value="128k" {{ 'selected' if settings.audio_quality == '128k' }}>128 kbps</option>
+            <option value="best" {{ 'selected' if settings.audio_quality == 'best' }}>Best available</option>
+        </select>
+    </fieldset>
+
+    <fieldset>
+        <legend>Schedule</legend>
+
+        <label for="sync_schedule">Sync Schedule (cron)</label>
+        <input type="text" id="sync_schedule" name="sync_schedule"
+               value="{{ settings.sync_schedule }}" placeholder="0 1 * * *">
+        <small>Default: <code>0 1 * * *</code> (every day at 01:00). Uses standard cron syntax.</small>
+    </fieldset>
+
+    <fieldset>
+        <legend>Output</legend>
+
+        <label for="output_template">Folder Structure Template</label>
+        <input type="text" id="output_template" name="output_template"
+               value="{{ settings.output_template }}"
+               placeholder="{artist}/{artist} - {album}/{track_number:02d} - {title}">
+        <small>Variables: <code>{artist}</code>, <code>{album}</code>, <code>{title}</code>, <code>{track_number}</code></small>
+    </fieldset>
+
+    <button type="submit">Save Settings</button>
+</form>
+{% endblock %}

@@ -1,0 +1,30 @@
+<tr id="track-{{ track.id }}">
+    <td>{{ track.track_number or '-' }}</td>
+    <td>{{ track.title }}</td>
+    <td>{{ track.artist }}</td>
+    <td>{{ track.album }}</td>
+    <td>{{ track.duration_ms|duration }}</td>
+    <td>
+        {% if track.status == 'downloaded' %}
+        <span class="badge badge-success">Downloaded</span>
+        {% elif track.status == 'downloading' %}
+        <span class="badge badge-info" aria-busy="true">Downloading</span>
+        {% elif track.status == 'pending' %}
+        <span class="badge badge-warning">Pending</span>
+        {% elif track.status == 'not_found' %}
+        <span class="badge badge-secondary" title="{{ track.error_message or 'No match on YouTube Music' }}">Not Found</span>
+        {% elif track.status == 'error' %}
+        <span class="badge badge-error" title="{{ track.error_message or 'Download failed' }}">Error</span>
+        {% endif %}
+    </td>
+    <td>
+        {% if track.status in ('not_found', 'error') %}
+        <button class="outline small"
+                hx-post="{{ url_for('api.retry_track', track_id=track.id) }}"
+                hx-target="#track-{{ track.id }}"
+                hx-swap="outerHTML">
+            Retry
+        </button>
+        {% endif %}
+    </td>
+</tr>

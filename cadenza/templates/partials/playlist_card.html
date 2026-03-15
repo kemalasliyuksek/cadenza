@@ -1,0 +1,12 @@
+<article class="playlist-card">
+    <a href="{{ url_for('playlists.detail', playlist_id=playlist.id) }}">
+        {% if playlist.image_url %}
+        <img src="{{ playlist.image_url }}" alt="{{ playlist.name }}" class="playlist-card-cover">
+        {% endif %}
+        <hgroup>
+            <h4>{{ playlist.name }}</h4>
+            <p>{{ playlist.synced_count }}/{{ playlist.track_count }} tracks
+               {% if playlist.auto_sync %}&middot; auto-sync{% endif %}</p>
+        </hgroup>
+    </a>
+</article>

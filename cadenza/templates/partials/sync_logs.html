@@ -1,0 +1,42 @@
+{% if logs %}
+<figure>
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Playlist</th>
+            <th>Status</th>
+            <th>Downloaded</th>
+            <th>Skipped</th>
+            <th>Not Found</th>
+            <th>Errors</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.started_at.strftime('%Y-%m-%d %H:%M') if log.started_at }}</td>
+            <td>{{ log.playlist.name if log.playlist else 'All' }}</td>
+            <td>
+                {% if log.status == 'completed' %}
+                <span class="badge badge-success">Completed</span>
+                {% elif log.status == 'running' %}
+                <span class="badge badge-info" aria-busy="true">Running</span>
+                {% elif log.status == 'failed' %}
+                <span class="badge badge-error">Failed</span>
+                {% elif log.status == 'cancelled' %}
+                <span class="badge badge-secondary">Cancelled</span>
+                {% endif %}
+            </td>
+            <td>{{ log.tracks_downloaded }}</td>
+            <td>{{ log.tracks_skipped }}</td>
+            <td>{{ log.tracks_not_found }}</td>
+            <td>{{ log.tracks_error }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</figure>
+{% else %}
+<p>No sync history yet.</p>
+{% endif %}

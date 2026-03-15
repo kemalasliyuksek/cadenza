@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ playlist.name }} — Cadenza{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+        <div class="playlist-header">
+            {% if playlist.image_url %}
+            <img src="{{ playlist.image_url }}" alt="{{ playlist.name }}" class="playlist-cover">
+            {% endif %}
+            <div>
+                <hgroup>
+                    <h1>{{ playlist.name }}</h1>
+                    <p>{{ playlist.track_count }} tracks &middot; {{ playlist.synced_count }} downloaded
+                       &middot; by {{ playlist.owner }}</p>
+                </hgroup>
+            </div>
+        </div>
+    </header>
+
+    <div class="button-group">
+        <form method="POST" action="{{ url_for('playlists.sync', playlist_id=playlist.id) }}" style="display:inline">
+            <button type="submit">Sync Now</button>
+        </form>
+        <form method="POST" action="{{ url_for('playlists.refresh', playlist_id=playlist.id) }}" style="display:inline">
+            <button type="submit" class="outline">Refresh from Spotify</button>
+        </form>
+        <form method="POST" action="{{ url_for('playlists.toggle_auto_sync', playlist_id=playlist.id) }}" style="display:inline">
+            <button type="submit" class="outline {{ 'secondary' if playlist.auto_sync }}">
+                Auto-sync: {{ 'ON' if playlist.auto_sync else 'OFF' }}
+            </button>
+        </form>
+        <form method="POST" action="{{ url_for('playlists.delete', playlist_id=playlist.id) }}"
+              style="display:inline" onsubmit="return confirm('Delete this playlist?')">
+            <button type="submit" class="outline contrast">Delete</button>
+        </form>
+    </div>
+</article>
+
+<div id="sync-status"
+     hx-get="{{ url_for('api.sync_status') }}"
+     hx-trigger="load, every 3s"
+     hx-swap="innerHTML">
+</div>
+
+{% if status_counts %}
+<div class="grid">
+    <article>
+        <small>Downloaded</small>
+        <h3>{{ status_counts.get('downloaded', 0) }}</h3>
+    </article>
+    <article>
+        <small>Pending</small>
+        <h3>{{ status_counts.get('pending', 0) }}</h3>
+    </article>
+    <article>
+        <small>Not Found</small>
+        <h3>{{ status_counts.get('not_found', 0) }}</h3>
+    </article>
+    <article>
+        <small>Error</small>
+        <h3>{{ status_counts.get('error', 0) }}</h3>
+    </article>
+</div>
+{% endif %}
+
+<figure>
+<table>
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Artist</th>
+            <th>Album</th>
+            <th>Duration</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for track in tracks.items %}
+        {% include "partials/track_row.html" %}
+        {% endfor %}
+    </tbody>
+</table>
+</figure>
+
+{% if tracks.pages > 1 %}
+<nav>
+    <ul>
+        {% if tracks.has_prev %}
+        <li><a href="?page={{ tracks.prev_num }}">Previous</a></li>
+        {% endif %}
+        <li>Page {{ tracks.page }} of {{ tracks.pages }}</li>
+        {% if tracks.has_next %}
+        <li><a href="?page={{ tracks.next_num }}">Next</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

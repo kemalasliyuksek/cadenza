@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cadenza{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li><a href="{{ url_for('main.index') }}"><strong>Cadenza</strong></a></li>
+        </ul>
+        <ul>
+            <li><a href="{{ url_for('main.index') }}"{% if request.endpoint == 'main.index' %} aria-current="page"{% endif %}>Dashboard</a></li>
+            <li><a href="{{ url_for('playlists.list_playlists') }}"{% if request.blueprint == 'playlists' %} aria-current="page"{% endif %}>Playlists</a></li>
+            <li><a href="{{ url_for('settings.index') }}"{% if request.blueprint == 'settings' %} aria-current="page"{% endif %}>Settings</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <article class="flash flash-{{ category }}">
+            {{ message }}
+        </article>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="container-fluid">
+        <small>
+            <a href="https://github.com/kemalasliyuksek/cadenza" target="_blank">Cadenza</a> &mdash;
+            Self-hosted Spotify playlist sync
+        </small>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
