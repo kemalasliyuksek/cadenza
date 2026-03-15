@@ -7,14 +7,26 @@ import subprocess
 
 logger = logging.getLogger("cadenza")
 
+COOKIES_SOURCE = "/app/cookies.txt"
+COOKIES_WRITABLE = "/tmp/cookies.txt"
+
 
 def _find_ytdlp() -> str:
     """Find the best available yt-dlp binary."""
-    # Prefer system-installed (Homebrew) over venv version
     for path in ["/opt/homebrew/bin/yt-dlp", "/usr/local/bin/yt-dlp"]:
         if os.path.exists(path):
             return path
     return shutil.which("yt-dlp") or "yt-dlp"
+
+
+def _get_cookies_path() -> str | None:
+    """Get a writable cookies path. Copies from read-only mount if needed."""
+    if os.path.exists(COOKIES_WRITABLE):
+        return COOKIES_WRITABLE
+    if os.path.exists(COOKIES_SOURCE):
+        shutil.copy2(COOKIES_SOURCE, COOKIES_WRITABLE)
+        return COOKIES_WRITABLE
+    return None
 
 
 class DownloaderService:
@@ -22,26 +34,10 @@ class DownloaderService:
 
     def download(self, youtube_id: str, output_path: str, audio_format: str = "mp3",
                  audio_quality: str = "320k") -> str:
-        """Download a track from YouTube Music.
-
-        Args:
-            youtube_id: YouTube video ID.
-            output_path: Full path for the output file (without extension).
-            audio_format: Audio format (mp3, opus, m4a).
-            audio_quality: Audio quality (320k, 256k, etc. or "best").
-
-        Returns:
-            Path to the downloaded file.
-
-        Raises:
-            DownloadError: If download fails.
-        """
-        # Ensure output directory exists
+        """Download a track from YouTube Music."""
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
 
         url = f"https://music.youtube.com/watch?v={youtube_id}"
-
-        # yt-dlp output template (without extension, yt-dlp adds it)
         output_template = f"{output_path}.%(ext)s"
 
         cmd = [
@@ -55,14 +51,14 @@ class DownloaderService:
             "--retries", "3",
             "--no-warnings",
             "--quiet",
+            "--format", "bestaudio/best",
             url,
         ]
 
-        # Add cookies file if available (prevents bot detection)
-        cookies_path = "/app/cookies.txt"
-        if os.path.exists(cookies_path):
+        cookies = _get_cookies_path()
+        if cookies:
             cmd.insert(-1, "--cookies")
-            cmd.insert(-1, cookies_path)
+            cmd.insert(-1, cookies)
 
         logger.debug("Running: %s", " ".join(cmd))
 
@@ -76,12 +72,11 @@ class DownloaderService:
         if result.returncode != 0:
             raise DownloadError(f"yt-dlp failed: {result.stderr.strip()}")
 
-        # Find the actual output file (yt-dlp may use different extension)
+        # Find the actual output file
         expected_path = f"{output_path}.{audio_format}"
         if os.path.exists(expected_path):
             return expected_path
 
-        # Search for any file matching the base path
         base_dir = os.path.dirname(output_path)
         base_name = os.path.basename(output_path)
         for f in os.listdir(base_dir):
