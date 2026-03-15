@@ -1,16 +1,21 @@
 {% if sync.running %}
-<article aria-busy="true" class="sync-progress">
-    <header>Syncing: {{ sync.playlist_name or 'All playlists' }}</header>
-    <p>
-        {{ sync.current_track or 'Starting...' }}
-        <br>
-        <small>{{ sync.progress }} / {{ sync.total }} tracks</small>
-    </p>
+<article class="sync-progress">
+    <header>
+        <strong>Syncing: {{ sync.playlist_name or 'All playlists' }}</strong>
+        <span class="sync-counter">{{ sync.progress }} / {{ sync.total }}</span>
+    </header>
+    {% if sync.current_track %}
+    <p class="sync-current-track">{{ sync.current_track }}</p>
+    {% endif %}
     <progress value="{{ sync.progress }}" max="{{ sync.total }}"></progress>
     <footer>
         <button hx-post="{{ url_for('api.sync_stop') }}" hx-swap="none" class="outline secondary small">
-            Cancel
+            Stop
         </button>
     </footer>
+</article>
+{% elif sync.last_completed %}
+<article class="sync-done">
+    <small>Last sync: {{ sync.last_completed }} — {{ sync.last_downloaded }} downloaded, {{ sync.last_skipped }} skipped, {{ sync.last_errors }} errors</small>
 </article>
 {% endif %}

@@ -39,30 +39,16 @@
 
 <div id="sync-status"
      hx-get="{{ url_for('api.sync_status') }}"
-     hx-trigger="load, every 3s"
+     hx-trigger="load, every 2s"
      hx-swap="innerHTML">
 </div>
 
-{% if status_counts %}
-<div class="grid">
-    <article>
-        <small>Downloaded</small>
-        <h3>{{ status_counts.get('downloaded', 0) }}</h3>
-    </article>
-    <article>
-        <small>Pending</small>
-        <h3>{{ status_counts.get('pending', 0) }}</h3>
-    </article>
-    <article>
-        <small>Not Found</small>
-        <h3>{{ status_counts.get('not_found', 0) }}</h3>
-    </article>
-    <article>
-        <small>Error</small>
-        <h3>{{ status_counts.get('error', 0) }}</h3>
-    </article>
+<div id="status-counts"
+     hx-get="{{ url_for('api.playlist_counts', playlist_id=playlist.id) }}"
+     hx-trigger="load, every 3s"
+     hx-swap="innerHTML">
+    {% include "partials/status_counts.html" %}
 </div>
-{% endif %}
 
 <figure>
 <table>
@@ -77,7 +63,10 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="track-table"
+           hx-get="{{ url_for('api.playlist_tracks', playlist_id=playlist.id, page=tracks.page) }}"
+           hx-trigger="every 3s"
+           hx-swap="innerHTML">
         {% for track in tracks.items %}
         {% include "partials/track_row.html" %}
         {% endfor %}

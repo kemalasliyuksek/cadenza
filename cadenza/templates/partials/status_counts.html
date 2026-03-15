@@ -1,0 +1,18 @@
+<div class="grid">
+    <article>
+        <small>Downloaded</small>
+        <h3>{{ status_counts.get('downloaded', 0) }}</h3>
+    </article>
+    <article>
+        <small>Pending</small>
+        <h3>{{ status_counts.get('pending', 0) + status_counts.get('downloading', 0) }}</h3>
+    </article>
+    <article>
+        <small>Not Found</small>
+        <h3>{{ status_counts.get('not_found', 0) }}</h3>
+    </article>
+    <article>
+        <small>Error</small>
+        <h3>{{ status_counts.get('error', 0) }}</h3>
+    </article>
+</div>

@@ -1,4 +1,4 @@
-<tr id="track-{{ track.id }}">
+<tr id="track-{{ track.id }}" class="{{ 'downloading-row' if track.status == 'downloading' }}">
     <td>{{ track.track_number or '-' }}</td>
     <td>{{ track.title }}</td>
     <td>{{ track.artist }}</td>
@@ -8,7 +8,7 @@
         {% if track.status == 'downloaded' %}
         <span class="badge badge-success">Downloaded</span>
         {% elif track.status == 'downloading' %}
-        <span class="badge badge-info" aria-busy="true">Downloading</span>
+        <span class="badge badge-downloading">Downloading...</span>
         {% elif track.status == 'pending' %}
         <span class="badge badge-warning">Pending</span>
         {% elif track.status == 'not_found' %}

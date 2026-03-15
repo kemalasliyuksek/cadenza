@@ -58,6 +58,12 @@ class DownloaderService:
             url,
         ]
 
+        # Add cookies file if available (prevents bot detection)
+        cookies_path = "/app/cookies.txt"
+        if os.path.exists(cookies_path):
+            cmd.insert(-1, "--cookies")
+            cmd.insert(-1, cookies_path)
+
         logger.debug("Running: %s", " ".join(cmd))
 
         try:
