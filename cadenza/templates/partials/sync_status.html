@@ -1,21 +1,28 @@
 {% if sync.running %}
-<article class="sync-progress">
-    <header>
-        <strong>Syncing: {{ sync.playlist_name or 'All playlists' }}</strong>
-        <span class="sync-counter">{{ sync.progress }} / {{ sync.total }}</span>
-    </header>
-    {% if sync.current_track %}
-    <p class="sync-current-track">{{ sync.current_track }}</p>
-    {% endif %}
-    <progress value="{{ sync.progress }}" max="{{ sync.total }}"></progress>
-    <footer>
-        <button hx-post="{{ url_for('api.sync_stop') }}" hx-swap="none" class="outline secondary small">
-            Stop
-        </button>
-    </footer>
-</article>
+<div class="sync-bar">
+    <div class="sync-bar-top">
+        <div class="sync-bar-info">
+            <strong>{{ sync.percent }}%</strong>
+            <span>{{ sync.progress }} / {{ sync.total }} tracks</span>
+            {% if sync.current_track and not sync.paused %}
+            <span class="sync-current">{{ sync.current_track }}</span>
+            {% elif sync.paused %}
+            <span class="sync-current">Paused</span>
+            {% endif %}
+        </div>
+        <div class="sync-bar-actions">
+            {% if sync.paused %}
+            <button hx-post="{{ url_for('api.sync_resume') }}" hx-swap="none" class="small">Resume</button>
+            {% else %}
+            <button hx-post="{{ url_for('api.sync_pause') }}" hx-swap="none" class="outline small">Pause</button>
+            {% endif %}
+            <button hx-post="{{ url_for('api.sync_stop') }}" hx-swap="none" class="outline secondary small">Stop</button>
+        </div>
+    </div>
+    <progress value="{{ sync.progress }}" max="{{ sync.total }}" class="sync-bar-progress"></progress>
+</div>
 {% elif sync.last_completed %}
-<article class="sync-done">
+<div class="sync-bar sync-bar-done">
     <small>Last sync: {{ sync.last_completed }} — {{ sync.last_downloaded }} downloaded, {{ sync.last_skipped }} skipped, {{ sync.last_errors }} errors</small>
-</article>
+</div>
 {% endif %}

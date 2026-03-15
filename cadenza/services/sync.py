@@ -36,8 +36,12 @@ class SyncService:
     def __init__(self):
         self._lock = threading.Lock()
         self._cancel_flag = False
+        self._pause_flag = False
+        self._pause_event = threading.Event()
+        self._pause_event.set()  # Not paused initially
         self._status = {
             "running": False,
+            "paused": False,
             "playlist_name": None,
             "current_track": None,
             "progress": 0,
@@ -55,11 +59,26 @@ class SyncService:
 
     @property
     def status(self) -> dict:
-        return self._status.copy()
+        s = self._status.copy()
+        s["percent"] = round(s["progress"] / s["total"] * 100) if s["total"] > 0 else 0
+        return s
 
     def cancel(self):
         """Signal the current sync to stop."""
         self._cancel_flag = True
+        self._pause_event.set()  # Unpause so thread can exit
+
+    def pause(self):
+        """Pause the current sync."""
+        self._pause_flag = True
+        self._pause_event.clear()
+        self._status["paused"] = True
+
+    def resume(self):
+        """Resume a paused sync."""
+        self._pause_flag = False
+        self._pause_event.set()
+        self._status["paused"] = False
 
     def start_playlist_sync(self, playlist_id: int) -> None:
         """Start a sync for a single playlist in a background thread."""
@@ -94,7 +113,10 @@ class SyncService:
 
         try:
             self._cancel_flag = False
+            self._pause_flag = False
+            self._pause_event.set()
             self._status["running"] = True
+            self._status["paused"] = False
 
             for playlist_id in playlist_ids:
                 if self._cancel_flag:
@@ -102,7 +124,8 @@ class SyncService:
                 self._sync_single_playlist(playlist_id)
 
         finally:
-            self._status.update(running=False, playlist_name=None, current_track=None, progress=0, total=0)
+            self._status.update(running=False, paused=False, playlist_name=None, current_track=None, progress=0, total=0)
+            self._pause_event.set()
             self._lock.release()
 
     def _sync_single_playlist(self, playlist_id: int):
@@ -155,6 +178,9 @@ class SyncService:
             )
 
             for i, track in enumerate(tracks):
+                # Wait if paused
+                self._pause_event.wait()
+
                 if self._cancel_flag:
                     logger.info("Sync cancelled")
                     break

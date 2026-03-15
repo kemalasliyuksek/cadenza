@@ -59,18 +59,38 @@ def sync_stop():
     return jsonify({"status": "cancelled"})
 
 
+@api_bp.route("/sync/pause", methods=["POST"])
+def sync_pause():
+    """Pause running sync."""
+    from cadenza.services.sync import get_sync_service
+
+    sync_service = get_sync_service()
+    sync_service.pause()
+
+    return jsonify({"status": "paused"})
+
+
+@api_bp.route("/sync/resume", methods=["POST"])
+def sync_resume():
+    """Resume paused sync."""
+    from cadenza.services.sync import get_sync_service
+
+    sync_service = get_sync_service()
+    sync_service.resume()
+
+    return jsonify({"status": "resumed"})
+
+
 @api_bp.route("/playlists/<int:playlist_id>/tracks")
 def playlist_tracks(playlist_id):
     """Return track table rows as HTML partial for HTMX live updates."""
     page = request.args.get("page", 1, type=int)
     playlist = db.get_or_404(Playlist, playlist_id)
-    tracks = playlist.tracks.order_by(Track.track_number.asc(), Track.title.asc()).paginate(
+    tracks = playlist.tracks.order_by(Track.id.asc()).paginate(
         page=page, per_page=50, error_out=False
     )
-    rows = ""
-    for track in tracks.items:
-        rows += render_template("partials/track_row.html", track=track)
-    return rows
+    offset = (page - 1) * 50
+    return render_template("partials/track_table_body.html", tracks=tracks.items, offset=offset)
 
 
 @api_bp.route("/playlists/<int:playlist_id>/counts")

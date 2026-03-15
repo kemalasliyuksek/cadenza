@@ -20,10 +20,12 @@
     display: inline-block;
     padding: 0.15rem 0.5rem;
     border-radius: 1rem;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.025em;
+    min-width: 5.5rem;
+    text-align: center;
 }
 .badge-success { background: #2d6a4f; color: #d8f3dc; }
 .badge-warning { background: #7f5539; color: #fde68a; }
@@ -84,33 +86,46 @@
     padding: 0.25rem 0.6rem;
 }
 
-/* Sync progress */
-.sync-progress {
-    border-left: 4px solid var(--pico-primary);
-    padding: 1rem 1.25rem;
+/* Sync bar */
+.sync-bar {
+    background: var(--pico-card-background-color);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: var(--pico-border-radius);
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
 }
-.sync-progress header {
+.sync-bar-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0;
     margin-bottom: 0.5rem;
+    gap: 1rem;
 }
-.sync-counter {
-    font-size: 0.85rem;
-    opacity: 0.7;
-}
-.sync-current-track {
+.sync-bar-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
     font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    opacity: 0.85;
 }
-.sync-progress progress {
-    margin-bottom: 0.5rem;
+.sync-bar-info strong {
+    font-size: 1.1rem;
 }
-.sync-done {
-    padding: 0.5rem 1rem;
-    opacity: 0.7;
+.sync-current {
+    opacity: 0.65;
+    font-size: 0.85rem;
+}
+.sync-bar-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-shrink: 0;
+}
+.sync-bar-progress {
+    margin: 0;
+    width: 100%;
+}
+.sync-bar-done {
+    opacity: 0.6;
 }
 
 /* Track status transition */
@@ -130,13 +145,18 @@
 /* Table improvements */
 table {
     font-size: 0.9rem;
+    table-layout: fixed;
+    width: 100%;
 }
+th:nth-child(1) { width: 3%; }   /* # */
+th:nth-child(2) { width: 25%; }  /* Title */
+th:nth-child(3) { width: 20%; }  /* Artist */
+th:nth-child(4) { width: 20%; }  /* Album */
+th:nth-child(5) { width: 8%; }   /* Duration */
+th:nth-child(6) { width: 12%; }  /* Status */
+th:nth-child(7) { width: 7%; }   /* Actions */
 td, th {
     white-space: nowrap;
-}
-td:nth-child(2), td:nth-child(3), td:nth-child(4) {
-    white-space: normal;
-    max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
 }

@@ -90,7 +90,7 @@ def add():
 def detail(playlist_id):
     playlist = db.get_or_404(Playlist, playlist_id)
     page = request.args.get("page", 1, type=int)
-    tracks = playlist.tracks.order_by(Track.track_number.asc(), Track.title.asc()).paginate(
+    tracks = playlist.tracks.order_by(Track.id.asc()).paginate(
         page=page, per_page=50, error_out=False
     )
     status_counts = (
@@ -101,7 +101,9 @@ def detail(playlist_id):
     )
     status_counts = dict(status_counts)
     return render_template(
-        "playlists/detail.html", playlist=playlist, tracks=tracks, status_counts=status_counts
+        "playlists/detail.html", playlist=playlist, pagination=tracks,
+        tracks=tracks.items, status_counts=status_counts,
+        offset=(page - 1) * 50,
     )
 
 

@@ -1,5 +1,6 @@
+{% for track in tracks %}
 <tr id="track-{{ track.id }}" class="{{ 'downloading-row' if track.status == 'downloading' }}">
-    <td>{{ loop.index if loop is defined else track.id }}</td>
+    <td>{{ offset + loop.index }}</td>
     <td>{{ track.title }}</td>
     <td>{{ track.artist }}</td>
     <td>{{ track.album }}</td>
@@ -8,7 +9,7 @@
         {% if track.status == 'downloaded' %}
         <span class="badge badge-success">Downloaded</span>
         {% elif track.status == 'downloading' %}
-        <span class="badge badge-downloading">Downloading...</span>
+        <span class="badge badge-downloading">Downloading</span>
         {% elif track.status == 'pending' %}
         <span class="badge badge-warning">Pending</span>
         {% elif track.status == 'not_found' %}
@@ -28,3 +29,4 @@
         {% endif %}
     </td>
 </tr>
+{% endfor %}
