@@ -30,8 +30,7 @@ EXPOSE 8811
 ENV FLASK_APP=cadenza.app \
     CADENZA_DB_PATH=/app/data/cadenza.db \
     CADENZA_MUSIC_PATH=/music \
-    CADENZA_LOG_LEVEL=info \
-    CADENZA_SECRET_KEY=change-me
+    CADENZA_LOG_LEVEL=info
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
