@@ -1,6 +1,6 @@
 services:
   cadenza:
-    build: .
+    image: ghcr.io/kemalasliyuksek/cadenza:latest
     container_name: cadenza
     user: "33:33"
     restart: unless-stopped
