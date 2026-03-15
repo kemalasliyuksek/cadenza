@@ -12,8 +12,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install yt-dlp (latest version, updated frequently)
-RUN pip install --no-cache-dir --upgrade yt-dlp
+# Install yt-dlp with all extras (includes EJS challenge solver)
+RUN pip install --no-cache-dir --upgrade "yt-dlp[default]"
 
 # Copy application code
 COPY cadenza/ cadenza/
