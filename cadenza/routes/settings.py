@@ -22,6 +22,7 @@ DEFAULTS = {
     "audio_quality": "320k",
     "sync_schedule": "0 1 * * *",
     "output_template": "{artist}/{artist} - {album}/{track_number:02d} - {title}",
+    "post_sync_commands": "",
 }
 
 
@@ -54,7 +55,8 @@ def index():
 @settings_bp.route("/", methods=["POST"])
 def save():
     for key in ["spotify_client_id", "spotify_client_secret", "spotify_redirect_uri",
-                "audio_format", "audio_quality", "sync_schedule", "output_template"]:
+                "audio_format", "audio_quality", "sync_schedule", "output_template",
+                "post_sync_commands"]:
         value = request.form.get(key, "").strip()
         if value or key in ("spotify_client_id", "spotify_client_secret"):
             set_setting(key, value)

@@ -197,6 +197,10 @@ class SyncService:
                 sync_log.tracks_not_found, sync_log.tracks_error,
             )
 
+            # Post-sync: fix file ownership for Nextcloud compatibility
+            if sync_log.tracks_downloaded > 0:
+                self._run_post_sync_hooks(music_path)
+
     def _process_track(self, track: Track, matcher: MatcherService,
                        downloader: DownloaderService, metadata_service: MetadataService,
                        music_path: str, audio_format: str, audio_quality: str,
@@ -315,3 +319,27 @@ class SyncService:
                 db.session.add(track)
 
         db.session.commit()
+
+    @staticmethod
+    def _run_post_sync_hooks(music_path: str) -> None:
+        """Run configurable post-sync commands from settings."""
+        from cadenza.routes.settings import get_setting
+
+        commands_str = get_setting("post_sync_commands", "")
+        if not commands_str.strip():
+            return
+
+        for line in commands_str.strip().splitlines():
+            cmd = line.strip()
+            if not cmd or cmd.startswith("#"):
+                continue
+            try:
+                result = subprocess.run(
+                    cmd, shell=True, capture_output=True, text=True, timeout=120,
+                )
+                if result.returncode == 0:
+                    logger.info("Post-sync hook OK: %s", cmd)
+                else:
+                    logger.warning("Post-sync hook failed: %s → %s", cmd, result.stderr.strip())
+            except Exception as e:
+                logger.warning("Post-sync hook error: %s → %s", cmd, e)

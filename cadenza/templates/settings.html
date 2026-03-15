@@ -78,6 +78,15 @@
         <small>Variables: <code>{artist}</code>, <code>{album}</code>, <code>{title}</code>, <code>{track_number}</code></small>
     </fieldset>
 
+    <fieldset>
+        <legend>Post-Sync Commands</legend>
+
+        <label for="post_sync_commands">Shell commands to run after each sync</label>
+        <textarea id="post_sync_commands" name="post_sync_commands"
+                  rows="3" placeholder="chown -R 33:33 /music">{{ settings.post_sync_commands }}</textarea>
+        <small>One command per line. Runs inside the container after downloads complete. Lines starting with <code>#</code> are ignored.</small>
+    </fieldset>
+
     <button type="submit">Save Settings</button>
 </form>
 {% endblock %}
